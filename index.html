@@ -1,9 +1,10 @@
 <!doctype html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>Snake</title>
+  <title>لعبة الثعبان </title>
+
   <style>
     :root{
       --bg1:#071018;
@@ -67,7 +68,7 @@
     }
     .title{
       font-weight:900;
-      letter-spacing:.22em;
+      letter-spacing:.16em;
       font-size:18px;
       text-transform:uppercase;
       line-height:1;
@@ -244,7 +245,6 @@
       margin-top:6px;
     }
 
-    /* Small screens */
     @media (max-width: 680px){
       .controls{ grid-template-columns: 1fr; }
       .pad{ justify-self:start; }
@@ -253,21 +253,22 @@
     }
   </style>
 </head>
+
 <body>
   <div class="wrap">
     <div class="top">
       <div class="brand">
         <div class="logo"></div>
         <div>
-          <div class="title">S N A K E</div>
-          <div class="sub">Wrap walls ✅ • Hit tail = Game Over ❌ • Swipe / Buttons / Arrows</div>
+          <div class="title">لعبة الثعبان – رفال</div>
+          <div class="sub">العبور من الجدران ✓ • لمس الذيل = خسارة ✗ • سحب/أزرار/أسهم</div>
         </div>
       </div>
 
       <div class="hud">
-        <div class="pill">Score: <b id="score">0</b></div>
-        <div class="pill">Best: <b id="best">0</b></div>
-        <div class="pill">Speed: <b id="speed">1x</b></div>
+        <div class="pill">النقاط: <b id="score">0</b></div>
+        <div class="pill">الأعلى: <b id="best">0</b></div>
+        <div class="pill">السرعة: <b id="speed">1x</b></div>
       </div>
     </div>
 
@@ -277,13 +278,13 @@
 
         <div class="overlay" id="overlay">
           <div class="modal">
-            <h2 id="overlayTitle">Press Start</h2>
-            <p id="overlayText">Use arrow keys / WASD, or swipe on the board, or use the buttons.</p>
+            <h2 id="overlayTitle">اضغط للبدء</h2>
+            <p id="overlayText">استخدم الأسهم أو WASD أو السحب على اللوحة أو أزرار التحكم.</p>
             <div class="rowBtns">
-              <button class="btn" id="startBtn">Start</button>
-              <button class="btn secondary" id="restartBtn">Restart</button>
+              <button class="btn" id="startBtn">ابدأ</button>
+              <button class="btn secondary" id="restartBtn">إعادة تشغيل</button>
             </div>
-            <div class="tiny">Tip: on phone, swipe anywhere on the board.</div>
+            <div class="tiny">على الهاتف: اسحب في أي مكان على اللوحة للتحكم.</div>
           </div>
         </div>
       </div>
@@ -291,16 +292,16 @@
       <div class="controls">
         <div>
           <div class="footerBtns">
-            <button class="btn secondary" id="pauseBtn">Pause</button>
-            <button class="btn secondary" id="resumeBtn" style="display:none;">Resume</button>
-            <button class="btn secondary" id="hardRestartBtn">Restart</button>
+            <button class="btn secondary" id="pauseBtn">إيقاف مؤقت</button>
+            <button class="btn secondary" id="resumeBtn" style="display:none;">متابعة</button>
+            <button class="btn secondary" id="hardRestartBtn">إعادة</button>
           </div>
           <div class="note" style="margin-top:10px;">
-            Rules: <b>Wall wraps</b> (you pass through). You lose only if you hit <b>your tail</b>.
+            القواعد: <b>المرور عبر الجدران</b> مسموح، وتخسر فقط عند لمس <b>الذيل</b>.
           </div>
         </div>
 
-        <div class="pad" aria-label="Touch controls">
+        <div class="pad" aria-label="أزرار التحكم">
           <div class="padGrid">
             <button class="padBtn center" disabled></button>
             <button class="padBtn" data-dir="UP">▲</button>
@@ -321,24 +322,18 @@
 
 <script>
 (() => {
-  // ======= EASY SETTINGS (غيريها براحتك) =======
+  // ======= إعدادات سهلة =======
   const SETTINGS = {
-    // حجم لوحة اللعب (تصغير/تكبير): 520 مثلاً أصغر، 700 أكبر
     maxBoardPx: 560,
-
-    // حجم المربعات (كل ما زاد صار أكبر/أبطأ شكلياً)
     tile: 20,
 
-    // سرعة اللعبة (ms بين كل خطوة) - أقل = أسرع
-    tickMs: 110,
+    // ✅ أبطأ (كان 110) — كل ما زاد الرقم تبطأ اللعبة
+    tickMs: 180,
 
-    // ألوان
     snakeHead: "#20e3b2",
     snakeBody: "#2cccff",
     food: "#ff3b6b",
     gridAlpha: 0.10,
-
-    // طول البداية
     startLength: 5,
   };
 
@@ -374,10 +369,8 @@
   let score = 0;
   let best = 0;
 
-  // timing
   let lastTs = 0;
 
-  // ======= Helpers =======
   function clampWrap(n, max){
     if (n < 0) return max - 1;
     if (n >= max) return 0;
@@ -385,7 +378,6 @@
   }
 
   function sameCell(a, b){ return a.x === b.x && a.y === b.y; }
-
   function randInt(max){ return Math.floor(Math.random() * max); }
 
   function placeFood(){
@@ -397,7 +389,6 @@
       if (!hit){ food = f; return; }
       tries++;
     }
-    // fallback (should never happen)
     food = {x: 0, y: 0};
   }
 
@@ -437,9 +428,7 @@
     }
   }
 
-  // ======= Resize board to fit device (smaller & centered) =======
   function fitCanvas(){
-    // board size = min(windowWidth*0.92, SETTINGS.maxBoardPx)
     const size = Math.min(Math.floor(window.innerWidth * 0.92), SETTINGS.maxBoardPx);
     canvas.width  = size;
     canvas.height = size;
@@ -447,11 +436,9 @@
     cols = Math.floor(canvas.width / SETTINGS.tile);
     rows = Math.floor(canvas.height / SETTINGS.tile);
 
-    // snap canvas to exact tiles (so grid fits perfectly)
     canvas.width  = cols * SETTINGS.tile;
     canvas.height = rows * SETTINGS.tile;
 
-    // IMPORTANT: if resizing during play, keep state but clamp positions
     if (snake.length){
       for (const s of snake){
         s.x = clampWrap(s.x, cols);
@@ -464,7 +451,6 @@
     }
   }
 
-  // ======= Game =======
   function resetGame(){
     score = 0;
     scoreEl.textContent = score;
@@ -472,7 +458,6 @@
     dir = {x:1,y:0};
     nextDir = {x:1,y:0};
 
-    // spawn snake center
     const startX = Math.floor(cols / 2);
     const startY = Math.floor(rows / 2);
     snake = [];
@@ -486,7 +471,7 @@
     running = false;
     paused = false;
 
-    setOverlay(true, "Press Start", "Use arrow keys / WASD, swipe, or buttons.");
+    setOverlay(true, "اضغط للبدء", "استخدم الأسهم أو WASD أو السحب أو أزرار التحكم.");
     setButtonsState();
   }
 
@@ -501,7 +486,7 @@
   function pauseGame(){
     if (!running || gameOver) return;
     paused = true;
-    setOverlay(true, "Paused", "Press Resume to continue.");
+    setOverlay(true, "إيقاف مؤقت", "اضغط متابعة للعودة للعب.");
     setButtonsState();
   }
 
@@ -523,12 +508,11 @@
       saveBest();
     }
 
-    setOverlay(true, "Game Over", "You hit your tail. Press Restart.");
+    setOverlay(true, "انتهت اللعبة", "لامست الذيل. اضغط إعادة تشغيل.");
     setButtonsState();
   }
 
   function trySetDir(nx, ny){
-    // prevent reversing into itself
     if (nx === -dir.x && ny === -dir.y) return;
     nextDir = {x:nx, y:ny};
   }
@@ -542,28 +526,22 @@
     let nx = head.x + dir.x;
     let ny = head.y + dir.y;
 
-    // WRAP around walls ✅
     nx = clampWrap(nx, cols);
     ny = clampWrap(ny, rows);
 
-    // check collision with tail ONLY (exclude the last head cell)
     for (let i = 0; i < snake.length; i++){
-      // if snake is moving forward, hitting any existing segment means lose
       if (snake[i].x === nx && snake[i].y === ny){
         endGame();
         return;
       }
     }
 
-    // move
     snake.push({x:nx, y:ny});
 
-    // eat?
     if (nx === food.x && ny === food.y){
       score++;
       scoreEl.textContent = score;
 
-      // tiny speed feel in HUD (optional)
       const sp = Math.min(3, 1 + score * 0.05);
       speedEl.textContent = sp.toFixed(1) + "x";
 
@@ -573,7 +551,6 @@
     }
   }
 
-  // ======= Drawing =======
   function drawGrid(){
     const t = SETTINGS.tile;
     ctx.save();
@@ -617,16 +594,15 @@
   }
 
   function draw(){
-    // background
     ctx.clearRect(0,0,canvas.width,canvas.height);
 
-    // subtle vignette
     const g = ctx.createRadialGradient(canvas.width*0.5, canvas.height*0.45, 20, canvas.width*0.5, canvas.height*0.5, canvas.width*0.75);
     g.addColorStop(0, "rgba(44,204,255,0.10)");
     g.addColorStop(1, "rgba(0,0,0,0)");
     ctx.fillStyle = g;
     ctx.fillRect(0,0,canvas.width,canvas.height);
 
+    // ✅ الشبكة موجودة
     drawGrid();
 
     const t = SETTINGS.tile;
@@ -636,7 +612,7 @@
     const fy = food.y*t + t/2;
     glowCircle(fx, fy, t*0.28, SETTINGS.food);
 
-    // snake
+    // snake (شكل احترافي كما كان)
     for (let i = 0; i < snake.length; i++){
       const s = snake[i];
       const x = s.x*t;
@@ -657,7 +633,6 @@
       ctx.fill();
       ctx.restore();
 
-      // head eyes
       if (isHead){
         ctx.save();
         ctx.fillStyle = "rgba(0,16,24,.9)";
@@ -673,7 +648,6 @@
     }
   }
 
-  // ======= Loop =======
   function loop(ts){
     if (!lastTs) lastTs = ts;
     const dt = ts - lastTs;
@@ -686,7 +660,7 @@
     requestAnimationFrame(loop);
   }
 
-  // ======= Input: Keyboard =======
+  // Keyboard
   window.addEventListener("keydown", (e) => {
     const k = e.key.toLowerCase();
     if (k === "arrowup" || k === "w")   { e.preventDefault(); trySetDir(0,-1); }
@@ -702,7 +676,7 @@
     }
   }, {passive:false});
 
-  // ======= Input: Buttons =======
+  // Pad buttons
   padButtons.forEach(btn => {
     btn.addEventListener("click", () => {
       const d = btn.dataset.dir;
@@ -710,12 +684,11 @@
       if (d === "DOWN") trySetDir(0, 1);
       if (d === "LEFT") trySetDir(-1,0);
       if (d === "RIGHT") trySetDir(1,0);
-      // auto start on first touch
       if (!running && !gameOver) startGame();
     });
   });
 
-  // ======= Input: Swipe (Touch) =======
+  // Swipe
   let touchStart = null;
   canvas.addEventListener("touchstart", (e) => {
     if (!e.touches || !e.touches[0]) return;
@@ -724,7 +697,6 @@
   }, {passive:true});
 
   canvas.addEventListener("touchmove", (e) => {
-    // prevent page scroll while swiping on board
     e.preventDefault();
   }, {passive:false});
 
@@ -746,7 +718,7 @@
     touchStart = null;
   }, {passive:true});
 
-  // ======= UI buttons =======
+  // UI buttons
   startBtn.addEventListener("click", () => startGame());
   restartBtn.addEventListener("click", () => { resetGame(); startGame(); });
 
@@ -755,7 +727,7 @@
   pauseBtn.addEventListener("click", () => pauseGame());
   resumeBtn.addEventListener("click", () => resumeGame());
 
-  // ======= Init =======
+  // Init
   loadBest();
   fitCanvas();
   window.addEventListener("resize", fitCanvas);
@@ -763,5 +735,8 @@
   requestAnimationFrame(loop);
 })();
 </script>
+
 </body>
 </html>
+
+
